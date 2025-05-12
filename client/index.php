@@ -1,18 +1,20 @@
 <?php
-session_start();
+require_once '../includes/config.php';
+require_once '../includes/autoload.php';
+
+// Check for login; if not, show login/register options.
 if (!isset($_SESSION['user'])) {
-    header("Location: ../public/login.php");
-    exit;
+    header("Location: ../client/pages/login.php");
+    exit();
 }
-$user = unserialize($_SESSION['user']);
-if ($user->role !== 'client') {
-    header("Location: ../public/login.php");
-    exit;
-}
-include_once __DIR__ . '/../templates/header.php';
 ?>
-<h2>Client Dashboard</h2>
-<p>Welcome, <?php echo htmlspecialchars($user->name); ?>!</p>
-<p><a href="apply_loan.php">Apply for a Loan</a> | <a href="auctions.php">View Auctions</a> | <a href="notifications.php">Notifications</a></p>
-<p><a href="profile.php">My Profile</a></p>
-<?php include_once __DIR__ . '/../templates/footer.php'; ?>
+<?php include 'includes/header.php'; ?>
+
+<main>
+    <?php
+    // This is the client dashboard – you can include logic to display account details, available loans, auctions, etc.
+    include 'pages/dashboard.php';
+    ?>
+</main>
+
+<?php include 'includes/footer.php'; ?>

@@ -1,22 +1,20 @@
 <?php
-session_start();
-if (!isset($_SESSION['user'])) {
-    header("Location: ../public/login.php");
-    exit;
+require_once '../includes/config.php';
+require_once '../includes/autoload.php';
+
+// Check for login and admin role
+if (!isset($_SESSION['user']) || ($_SESSION['user']['role'] != 'admin' && $_SESSION['user']['role'] != 'super_admin')) {
+    header("Location: ../admin/pages/login.php");
+    exit();
 }
-$user = unserialize($_SESSION['user']);
-if ($user->role !== 'admin') {
-    header("Location: ../public/login.php");
-    exit;
-}
-include_once __DIR__ . '/../templates/header.php';
 ?>
-<h2>Admin Dashboard</h2>
-<p>Welcome, <?php echo htmlspecialchars($user->name); ?>!</p>
-<p>
-    <a href="loans.php">Manage Loans</a> | 
-    <a href="auctions.php">Manage Auctions</a> | 
-    <a href="settings.php">Settings</a> | 
-    <a href="admin_management.php">Admin Management</a>
-</p>
-<?php include_once __DIR__ . '/../templates/footer.php'; ?>
+<?php include 'includes/header.php'; ?>
+
+<main>
+    <?php
+    // Include admin dashboard page or redirect based on request
+    include 'pages/dashboard.php';
+    ?>
+</main>
+
+<?php include 'includes/footer.php'; ?>
