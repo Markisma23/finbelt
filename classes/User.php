@@ -1,19 +1,19 @@
 <?php
 namespace App;
 use PDO;
-class User {
+
+abstract class User {
     public $id, $email, $role;
-    public static function findById($id) {
+    abstract public static function findById($id);
+    public static function login($email, $pass) {
         $db = Database::getInstance()->getConnection();
-        $stmt = $db->prepare("SELECT * FROM users WHERE id=?");
-        $stmt->execute([$id]); $u = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$u) return null;
-        if ($u['role']==='client') {
-            $stmt2 = $db->prepare("SELECT name,nrc,country FROM clients WHERE user_id=?");
-            $stmt2->execute([$id]); $c = $stmt2->fetch(PDO::FETCH_ASSOC);
-            return new Client($u + $c);
+        $stmt = $db->prepare("SELECT * FROM users WHERE email=?");
+        $stmt->execute([$email]); $u = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($u && password_verify($pass, $u['password'])) {
+            if ($u['role']==='client') return Client::findById($u['id']);
+            return Admin::findById($u['id']);
         }
-        return new Admin($u);
+        return null;
     }
     public static function login($email, $pass) {
         $db = Database::getInstance()->getConnection();
